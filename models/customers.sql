@@ -40,6 +40,15 @@ final as (
 
     left join customer_orders using (customer_id)
 
+),
+
+orders_V2 as (
+    select customer_id, sum(amount) as lifetime_value
+    from {{ ref('orders')}}
+    group by 1
 )
 
-select * from final
+select f.*, o.lifetime_value 
+from final f
+left join orders_V2 o
+on f.customer_id = o.customer_id
